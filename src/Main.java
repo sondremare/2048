@@ -1,7 +1,9 @@
 import gui.GameCell;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -11,24 +13,38 @@ import java.util.ArrayList;
 public class Main extends Application{
 
     private ArrayList<GameCell> referenceList = new ArrayList<>();
-    private GridPane gridPane;
+    private GridPane gamePane;
     private Board board;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        gridPane = new GridPane();
-        gridPane.setPrefSize(600, 600);
+        GridPane mainPane = new GridPane();
+        mainPane.setPrefSize(700,600);
+        GridPane controlPane = new GridPane();
+        controlPane.setPrefSize(100, 600);
+
+        Button button = new Button("Add tile");
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (board != null) {
+                    board.addRandomCell();
+                    updateGUI();
+                }
+            }
+        });
+        controlPane.add(button, 0, 0);
+
+        gamePane = new GridPane();
+        gamePane.setPrefSize(600, 600);
         board = new Board();
-        board.addRandomCell(2);
-        board.addRandomCell(4);
-        board.addRandomCell(16);
-        board.addRandomCell(2);
-        board.addRandomCell(3);
-        board.addRandomCell(4);
+
+        mainPane.add(controlPane, 0, 0);
+        mainPane.add(gamePane, 1, 0);
 
         updateGUI();
 
-        Scene scene = new Scene(gridPane);
+        Scene scene = new Scene(mainPane);
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -62,7 +78,7 @@ public class Main extends Application{
     public void updateGUI() {
         if (referenceList.size() != 0) {
             for (GameCell gameCell : referenceList) {
-                gridPane.getChildren().remove(gameCell);
+                gamePane.getChildren().remove(gameCell);
             }
         }
         Cell[][] cells = board.getCells();
@@ -73,7 +89,7 @@ public class Main extends Application{
                 }
                 GameCell gameCell = new GameCell(cell.getValue());
                 referenceList.add(gameCell);
-                gridPane.add(gameCell, i, j);
+                gamePane.add(gameCell, i, j);
 
 
             }

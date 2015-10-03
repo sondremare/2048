@@ -1,4 +1,4 @@
-import java.util.Iterator;
+import java.util.ArrayList;
 
 public class Board {
 
@@ -21,21 +21,20 @@ public class Board {
             loopOrder[j] = j;
             reverseLoopOrder[j] = Math.abs((SIZE-1)-j);
         }
-        /*reverseLoopOrder = new int[SIZE];
-        for (int k = SIZE - 1; k >= 0; k--) {
-            reverseLoopOrder[k] = k;
-        }*/
     }
 
     public Cell[][] getCells() {
         return cells;
     }
 
-    public void addRandomCell(int value) {
-        int randomX = (int)(Math.random()* SIZE);
-        int randomY = (int)(Math.random()*SIZE);
-        Cell cell = new Cell(randomX, randomY, value);
-        cells[randomX][randomY] = cell;
+    public void addRandomCell() {
+        ArrayList<Cell> emptyCells = getEmptyCells();
+        Cell chosenCell = emptyCells.get((int)Math.random()*emptyCells.size());
+        int value = 2;
+        if (Math.random() > 0.9) {
+            value = 4;
+        }
+        chosenCell.setValue(value);
     }
 
     public void move(Direction direction) {
@@ -65,6 +64,19 @@ public class Board {
             loopOrders[0] = reverseLoopOrder;
         }
         return loopOrders;
+    }
+
+    public ArrayList<Cell> getEmptyCells() {
+        ArrayList<Cell> emptyCells = new ArrayList<>();
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                Cell cell = cells[i][j];
+                if (cell.getValue() == EMPTY) {
+                    emptyCells.add(cell);
+                }
+            }
+        }
+        return emptyCells;
     }
 
     public Cell findClosestNeighbor(Cell cell, Direction direction) {
