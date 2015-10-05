@@ -1,6 +1,7 @@
 public class Cell {
     private Position position;
     private int value;
+    private boolean recentlyMerged = false;
 
     public Cell(int x, int y) {
         this.position = new Position(x, y);
@@ -50,4 +51,12 @@ public class Cell {
     public void setPosition(Position position) {
         this.position = position;
     }
-}
+
+    public boolean isRecentlyMerged() {
+        return recentlyMerged;
+    }
+
+    public void setRecentlyMerged(boolean recentlyMerged) {
+        this.recentlyMerged = recentlyMerged;
+    }
+ }

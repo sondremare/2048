@@ -1,3 +1,5 @@
+import javafx.geometry.Pos;
+
 import java.util.ArrayList;
 
 public class Board {
@@ -21,6 +23,7 @@ public class Board {
             loopOrder[j] = j;
             reverseLoopOrder[j] = Math.abs((SIZE-1)-j);
         }
+        addRandomCell();
     }
 
     public Cell[][] getCells() {
@@ -38,24 +41,48 @@ public class Board {
         chosenCell.setValue(value);
     }
 
-    public void move(Direction direction) {
+    public boolean move(Direction direction) {
+        boolean movedOrMerged = false;
         int[][] loopOrders = getLoopOrder(direction);
 
         for (int i : loopOrders[0]) {
             for (int j : loopOrders[1]) {
                 Cell cell = cells[i][j];
+                cell.setRecentlyMerged(false); //TODO is this the right place?
                 if (cell.getValue() != EMPTY) {
                     Cell neighbor = moveAndFindClosestNeighbor(cell, direction);
-                    //if (neighbor != null) {
-                        //TODO CHECK FOR MERGE
-                    //} else {
-                        cells[i][j] = new Cell(i, j, 0);
-                        cells[cell.getX()][cell.getY()] = cell;
-                    //}
+                    if (neighbor != null) {
+                        if (neighbor.getValue() == cell.getValue() && !neighbor.isRecentlyMerged()) {
+                            neighbor.setValue(neighbor.getValue()*2);
+                            neighbor.setRecentlyMerged(true);
+                            cells[i][j] = new Cell(i, j, 0);
+                            movedOrMerged = true;
+                        } else {
+                            if (cellMoved(cell, i, j)) {
+                                cells[i][j] = new Cell(i, j, 0);
+                                cells[cell.getX()][cell.getY()] = cell;
+                                movedOrMerged = true;
+                            }
+                        }
+                    } else {
+                        if (cellMoved(cell, i, j)) {
+                            cells[i][j] = new Cell(i, j, 0);
+                            cells[cell.getX()][cell.getY()] = cell;
+                            movedOrMerged = true;
+                        }
+                    }
                 }
 
             }
         }
+        if (movedOrMerged) {
+            addRandomCell();
+        }
+        return movedOrMerged;
+    }
+
+    private boolean cellMoved(Cell cell, int x, int y) {
+        return (x != cell.getX() || y != cell.getY());
     }
 
     public int[][] getLoopOrder(Direction direction) {
