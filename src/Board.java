@@ -48,7 +48,7 @@ public class Board {
         for (int i : loopOrders[0]) {
             for (int j : loopOrders[1]) {
                 Cell cell = cells[i][j];
-                cell.setRecentlyMerged(false); //TODO is this the right place?
+                cell.setRecentlyMerged(false);
                 if (cell.getValue() != EMPTY) {
                     Cell neighbor = moveAndFindClosestNeighbor(cell, direction);
                     if (neighbor != null) {
@@ -111,7 +111,7 @@ public class Board {
     }
 
     public Cell moveAndFindClosestNeighbor(Cell cell, Direction direction) {
-        Vector directionVector = Vector.getDirectionVector(direction);
+        Position directionVector = Position.getDirectionVector(direction);
         Position currentPosition = cell.getPosition();
         Position nextPos = new Position(currentPosition.getX() + directionVector.getX(), currentPosition.getY() + directionVector.getY());
         while(withinBounds(nextPos)) {
