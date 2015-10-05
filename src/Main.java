@@ -85,13 +85,9 @@ public class Main extends Application{
         for (int i = 0; i < cells.length; i++) {
             for (int j = cells[i].length-1; j >= 0; j--) {
                 Cell cell = cells[i][j];
-                if (cell.getValue() != Board.EMPTY) {
-                }
                 GameCell gameCell = new GameCell(cell.getValue());
                 referenceList.add(gameCell);
                 gamePane.add(gameCell, i, j);
-
-
             }
         }
         System.out.println(board);

@@ -29,7 +29,8 @@ public class Board {
 
     public void addRandomCell() {
         ArrayList<Cell> emptyCells = getEmptyCells();
-        Cell chosenCell = emptyCells.get((int)Math.random()*emptyCells.size());
+        int index = (int)(Math.random()*emptyCells.size());
+        Cell chosenCell = emptyCells.get((int)(Math.random()*emptyCells.size()));
         int value = 2;
         if (Math.random() > 0.9) {
             value = 4;
@@ -43,13 +44,16 @@ public class Board {
         for (int i : loopOrders[0]) {
             for (int j : loopOrders[1]) {
                 Cell cell = cells[i][j];
-                Cell neighbor = findClosestNeighbor(cell, direction);
-                if (!cell.equals(neighbor)) {
-                    cells[i][j] = new Cell(i, j, 0);
-                    cell.setX(neighbor.getX()); //TODO refactor as Position
-                    cell.setY(neighbor.getY());
-                    cells[cell.getX()][cell.getY()] = cell;
+                if (cell.getValue() != EMPTY) {
+                    Cell neighbor = moveAndFindClosestNeighbor(cell, direction);
+                    //if (neighbor != null) {
+                        //TODO CHECK FOR MERGE
+                    //} else {
+                        cells[i][j] = new Cell(i, j, 0);
+                        cells[cell.getX()][cell.getY()] = cell;
+                    //}
                 }
+
             }
         }
     }
@@ -79,25 +83,28 @@ public class Board {
         return emptyCells;
     }
 
-    public Cell findClosestNeighbor(Cell cell, Direction direction) {
-        Cell previous;
+    public Cell moveAndFindClosestNeighbor(Cell cell, Direction direction) {
         Vector directionVector = Vector.getDirectionVector(direction);
-        do {
-            previous = cell;
-            cell = new Cell(previous.getX() + directionVector.getX(), previous.getY() + directionVector.getY());
+        Position currentPosition = cell.getPosition();
+        Position nextPos = new Position(currentPosition.getX() + directionVector.getX(), currentPosition.getY() + directionVector.getY());
+        while(withinBounds(nextPos)) {
+            if (!cellAvailable(nextPos)) {
+                return cells[nextPos.getX()][nextPos.getY()];
+            }
+            currentPosition = nextPos;
+            nextPos = new Position(nextPos.getX() + directionVector.getX(), nextPos.getY() + directionVector.getY());
+            cell.setPosition(currentPosition);
         }
-        while(this.withinBounds(cell) && this.cellAvailable(cell));
-
-        return previous;
+        return null;
     }
 
-    private boolean withinBounds(Cell cell) {
-        return cell.getX() >= 0 && cell.getX() < SIZE &&
-                cell.getY() >= 0 && cell.getY() < SIZE;
+    private boolean withinBounds(Position position) {
+        return position.getX() >= 0 && position.getX() < SIZE &&
+                position.getY() >= 0 && position.getY() < SIZE;
     }
 
-    private boolean cellAvailable(Cell cell) {
-        return cells[cell.getX()][cell.getY()].getValue() == EMPTY;
+    private boolean cellAvailable(Position position) {
+        return cells[position.getX()][position.getY()].getValue() == EMPTY;
     }
 
     @Override
