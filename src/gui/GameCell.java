@@ -36,39 +36,39 @@ public class GameCell extends StackPane{
     public Color getColor(int value) {
         switch (value) {
             case 0:
-                return Color.DARKGREY;
+                return Color.LIGHTGREY;
             case 2:
-                return Color.LIGHTBLUE;
+                return Color.KHAKI;
             case 4:
-                return Color.BLUE;
+                return Color.GOLD;
             case 8:
-                return Color.NAVY;
+                return Color.GOLDENROD;
             case 16:
-                return Color.SALMON;
-            case 32:
                 return Color.ORANGE;
+            case 32:
+                return Color.DARKORANGE;
             case 64:
                 return Color.RED;
             case 128:
-                return Color.LIGHTGREEN;
+                return Color.LIGHTSKYBLUE;
             case 256:
-                return Color.GREEN;
+                return Color.DEEPSKYBLUE;
             case 512:
-                return Color.DARKGREEN;
+                return Color.BLUE;
             case 1024:
-                return Color.LIGHTYELLOW;
+                return Color.DARKBLUE;
             case 2048:
-                return Color.YELLOW;
+                return Color.MEDIUMORCHID;
             case 4096:
-                return Color.BROWN;
+                return Color.DARKORCHID;
             case 8192:
-                return Color.PURPLE;
+                return Color.INDIGO;
             case 16384:
-                return Color.PINK;
+                return Color.DARKGREY;
             case 32768:
-                return Color.CYAN;
+                return Color.GREY;
             case 65536:
-                return Color.ALICEBLUE;
+                return Color.BLACK;
             default:
                 return Color.BLACK;
         }
