@@ -1,4 +1,4 @@
-import javafx.geometry.Pos;
+package game;
 
 import java.util.ArrayList;
 
@@ -7,8 +7,7 @@ public class Board {
     public static int SIZE = 4;
     public static int EMPTY = 0;
     public Cell[][] cells;
-    private int[] loopOrder;
-    private int[] reverseLoopOrder;
+    private ArrayList<Direction> lastTwoMoves;
 
     public Board() {
         cells = new Cell[SIZE][SIZE];
@@ -17,13 +16,18 @@ public class Board {
                 cells[i][j] = new Cell(i,j,0);
             }
         }
-        loopOrder = new int[SIZE];
-        reverseLoopOrder = new int[SIZE];
-        for (int j = 0; j < SIZE; j++) {
-            loopOrder[j] = j;
-            reverseLoopOrder[j] = Math.abs((SIZE-1)-j);
-        }
+        lastTwoMoves = new ArrayList<>();
         addRandomCell();
+    }
+
+    public Board(Board previousState) {
+        cells = new Cell[SIZE][SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                cells[i][j] = new Cell(i, j, previousState.getCells()[i][j].getValue());
+            }
+        }
+        lastTwoMoves = new ArrayList<>(previousState.lastTwoMoves);
     }
 
     public Cell[][] getCells() {
@@ -43,7 +47,7 @@ public class Board {
 
     public boolean move(Direction direction) {
         boolean movedOrMerged = false;
-        int[][] loopOrders = getLoopOrder(direction);
+        int[][] loopOrders = Game.getLoopOrder(direction);
 
         for (int i : loopOrders[0]) {
             for (int j : loopOrders[1]) {
@@ -76,6 +80,13 @@ public class Board {
             }
         }
         if (movedOrMerged) {
+            if (lastTwoMoves.size() <= 1) {
+                lastTwoMoves.add(direction);
+            } else {
+                lastTwoMoves.set(0, lastTwoMoves.get(1));
+                lastTwoMoves.set(1, direction);
+            }
+
             addRandomCell();
         }
         return movedOrMerged;
@@ -83,18 +94,6 @@ public class Board {
 
     private boolean cellMoved(Cell cell, int x, int y) {
         return (x != cell.getX() || y != cell.getY());
-    }
-
-    public int[][] getLoopOrder(Direction direction) {
-        int[][] loopOrders = new int[2][SIZE];
-        loopOrders[0] = loopOrder;
-        loopOrders[1] = loopOrder;
-        if (direction == Direction.DOWN) {
-            loopOrders[1] = reverseLoopOrder;
-        } else if (direction == Direction.RIGHT) {
-            loopOrders[0] = reverseLoopOrder;
-        }
-        return loopOrders;
     }
 
     public ArrayList<Cell> getEmptyCells() {
@@ -132,6 +131,32 @@ public class Board {
 
     private boolean cellAvailable(Position position) {
         return cells[position.getX()][position.getY()].getValue() == EMPTY;
+    }
+
+    private boolean mergePossible() {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                Cell currentCell = cells[i][j];
+                if (currentCell.getValue() != EMPTY) {
+                    for (Direction direction : Direction.values()) {
+                        Position directionVector = Position.getDirectionVector(direction);
+                        Position currentPosition = currentCell.getPosition();
+                        Position neighborPosition = new Position(currentPosition.getX() + directionVector.getX(), currentPosition.getY() + directionVector.getY());
+                        if (withinBounds(neighborPosition)) {
+                            Cell neighborCell = cells[neighborPosition.getX()][neighborPosition.getY()];
+                            if (neighborCell.getValue() == currentCell.getValue()) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean hasMovesLeft() {
+        return getEmptyCells().size() == 0 || mergePossible();
     }
 
     @Override

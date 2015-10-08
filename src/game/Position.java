@@ -1,3 +1,5 @@
+package game;
+
 public class Position {
     public static Position LEFT_VECTOR = new Position(-1, 0);
     public static Position UP_VECTOR = new Position(0, -1);

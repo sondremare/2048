@@ -1,3 +1,5 @@
+package game;
+
 public class Cell {
     private Position position;
     private int value;
