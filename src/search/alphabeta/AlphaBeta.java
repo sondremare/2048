@@ -12,7 +12,6 @@ import java.util.ArrayList;
 public class AlphaBeta implements AdversarialSearch{
     private double alpha;
     private double beta;
-    public static int MAX_DEPTH = 7;
     private Heuristic heuristic;
 
     public AlphaBeta(Heuristic heuristic) {
@@ -20,7 +19,7 @@ public class AlphaBeta implements AdversarialSearch{
     }
 
     @Override
-    public Direction decision(Board board) {
+    public Direction decision(Board board, int maxDepth) {
         Direction bestMove = null;
         alpha = -Double.MAX_VALUE;
         beta = Double.MAX_VALUE;
@@ -28,7 +27,7 @@ public class AlphaBeta implements AdversarialSearch{
         for (Direction direction : Direction.values()) {
             Board child = Game.applyDirection(board, direction);
             if (child == null) continue; //If child is null, no cell was moved or merged with the given direction. So we skip it
-            double moveValue = minValue(child, alpha , beta, MAX_DEPTH);
+            double moveValue = minValue(child, alpha , beta, maxDepth);
             System.out.println(direction + ": "+moveValue);
             if (moveValue > bestMoveValue || bestMove == null) {
                 bestMoveValue = moveValue;

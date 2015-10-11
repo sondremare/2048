@@ -8,10 +8,12 @@ public class Game {
     private AdversarialSearch adversarialSearch;
     public static int[] loopOrder;
     public static int[] reverseLoopOrder;
+    private int maxDepth;
 
-    public Game(AdversarialSearch adversarialSearch) {
+    public Game(AdversarialSearch adversarialSearch, int maxDepth) {
         this.board = new Board();
         this.adversarialSearch = adversarialSearch;
+        this.maxDepth = maxDepth;
         loopOrder = new int[Board.SIZE];
         reverseLoopOrder = new int[Board.SIZE];
         for (int j = 0; j < Board.SIZE; j++) {
@@ -21,7 +23,7 @@ public class Game {
     }
 
     public boolean playStep() {
-        Direction direction = adversarialSearch.decision(board);
+        Direction direction = adversarialSearch.decision(board, maxDepth);
         System.out.println(direction);
         if (direction != null) {
             this.board = applyDirection(board, direction);

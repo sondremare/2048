@@ -5,15 +5,17 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import search.AdversarialSearch;
 import search.Heuristic;
 import search.alphabeta.AlphaBeta;
 import search.expectimax.Expectimax;
@@ -25,29 +27,55 @@ public class Main extends Application{
     private static ArrayList<GameCell> referenceList = new ArrayList<>();
     private static GridPane gamePane;
     private static Game game;
+    private static AdversarialSearch search;
     private static boolean gameOver = false;
     private static double PLAY_SPEED = 50;
     private boolean isPlaying = false;
     private static Timeline loop;
+    private static RadioButton alphaBetaRadioButton;
+    private static RadioButton expectiMaxRadiuButton;
+    private static TextField maxDepthInput;
+    private static TextField sleepTimeInput;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         GridPane mainPane = new GridPane();
-        mainPane.setPrefSize(700, 600);
+        mainPane.setPrefSize(800, 600);
         GridPane controlPane = new GridPane();
-        controlPane.setPrefSize(100, 600);
+        controlPane.setPrefSize(200, 600);
 
-        /*Button button = new Button("Add tile");
-        button.setOnAction(new EventHandler<ActionEvent>() {
+        ToggleGroup searchType = new ToggleGroup();
+        alphaBetaRadioButton = new RadioButton("Alpha-Beta pruning");
+        expectiMaxRadiuButton = new RadioButton("ExpectiMax");
+        alphaBetaRadioButton.setToggleGroup(searchType);
+        expectiMaxRadiuButton.setToggleGroup(searchType);
+        expectiMaxRadiuButton.setSelected(true);
+        searchType.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
-            public void handle(ActionEvent event) {
-                if (board != null) {
-                    board.addRandomCell();
-                    updateGUI();
-                }
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                initGame();
             }
         });
-        controlPane.add(button, 0, 0);*/
+
+        Label maxDepthLabel = new Label("Max depth: ");
+        maxDepthInput = new TextField("7");
+        maxDepthInput.setMaxWidth(50);
+        maxDepthInput.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                initGame();
+            }
+        });
+
+        Label sleepTimeLabel = new Label("Sleep (ms)");
+        sleepTimeInput = new TextField(String.valueOf(PLAY_SPEED));
+        sleepTimeInput.setMaxWidth(50);
+        sleepTimeInput.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                PLAY_SPEED = Double.parseDouble(newValue);
+            }
+        });
 
         Button playStepButton = new Button("Step");
         playStepButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -89,19 +117,36 @@ public class Main extends Application{
             }
         });
 
-        controlPane.add(playStepButton, 0, 0);
-        controlPane.add(playButton, 0, 1);
+        Button resetButton = new Button("Reset");
+        resetButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (isPlaying) {
+                    loop.stop();
+                    isPlaying = false;
+                    playButton.setText("Play");
+                }
+                gameOver = false;
+                initGame();
+            }
+        });
+
+        controlPane.add(alphaBetaRadioButton, 0, 0);
+        controlPane.add(expectiMaxRadiuButton, 0, 1);
+        controlPane.add(maxDepthLabel, 0, 2);
+        controlPane.add(maxDepthInput, 1, 2);
+        controlPane.add(sleepTimeLabel, 0, 3);
+        controlPane.add(sleepTimeInput, 1, 3);
+        controlPane.add(playStepButton, 0, 4);
+        controlPane.add(playButton, 0, 5);
+        controlPane.add(resetButton, 0, 6);
 
         gamePane = new GridPane();
         gamePane.setPrefSize(600, 600);
-        Heuristic heuristic = new Heuristic();
-        //game = new Game(new AlphaBeta(heuristic));
-        game = new Game(new Expectimax(heuristic));
-
         mainPane.add(controlPane, 0, 0);
         mainPane.add(gamePane, 1, 0);
 
-        updateGUI();
+        initGame();
 
         Scene scene = new Scene(mainPane);
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -131,6 +176,18 @@ public class Main extends Application{
         });
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public static void initGame() {
+        Heuristic heuristic = new Heuristic();
+        if (alphaBetaRadioButton.isSelected()) {
+            search = new AlphaBeta(heuristic);
+        } else if (expectiMaxRadiuButton.isSelected()) {
+            search = new Expectimax(heuristic);
+        }
+        int maxDepth = Integer.parseInt(maxDepthInput.getText());
+        game = new Game(search, maxDepth);
+        updateGUI();
     }
 
     public static void playStep() {
