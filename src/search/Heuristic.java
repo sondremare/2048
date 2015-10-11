@@ -2,6 +2,7 @@ package search;
 
 import game.Board;
 import game.Cell;
+import game.Position;
 
 public class Heuristic {
     //TODO, figure out if I need to remember last two moves for better gradient heuristic
@@ -64,19 +65,34 @@ public class Heuristic {
         double bottomLeftSum = 0;
         double topRightSum = 0;
         double bottomRightSum = 0;
+        int possibleMergeValues = 0;
         Cell[][] cells = board.getCells();
         for (int i = 0; i < Board.SIZE; i++) {
             for (int j = 0; j < Board.SIZE; j++) {
                 int cellValue = cells[i][j].getValue();
-                double scaledCellValue = cellValue;// == 0 ? 0 : Math.log(cells[i][j].getValue())/Math.log(2);
-                topLeftSum += cellValue * topLeftGradient[i][j];
-                bottomLeftSum += cellValue * bottomLeftGradient[i][j];
-                topRightSum += cellValue * topRightGradient[i][j];
-                bottomRightSum += cellValue * bottomRightGradient[i][j];
+                double scaledCellValue = cellValue;// == 0 ? 0 : Math.log(cellValue)/Math.log(2);
+                topLeftSum += scaledCellValue * topLeftGradient[i][j];
+                bottomLeftSum += scaledCellValue * bottomLeftGradient[i][j];
+                topRightSum += scaledCellValue * topRightGradient[i][j];
+                bottomRightSum += scaledCellValue * bottomRightGradient[i][j];
+
+                //Calculating heuristic for possible merges
+                if (cellValue != Board.EMPTY) {
+                    Position horizontalNeighbor = new Position(i+1, j);
+                    Position verticalNeighbor = new Position(i, j+1);
+                    if (Board.withinBounds(horizontalNeighbor) && cells[horizontalNeighbor.getX()][horizontalNeighbor.getY()].getValue() == cellValue) {
+                        possibleMergeValues += cellValue;//Math.log(cellValue)/Math.log(2.0);
+                    }
+                    if (Board.withinBounds(verticalNeighbor) && cells[verticalNeighbor.getX()][verticalNeighbor.getY()].getValue() == cellValue) {
+                        possibleMergeValues += cellValue;//Math.log(cellValue)/Math.log(2.0);
+                    }
+                }
+
+
             }
         }
         double gradientScore = Math.max(Math.max(topLeftSum, bottomLeftSum), Math.max(topRightSum, bottomRightSum));
         //return gradientScore;// works kinda decent with alphabeta
-        return gradientScore + Math.log(gradientScore)*board.getEmptyCells().size();// * 20;
+        return gradientScore + Math.log(gradientScore)*board.getEmptyCells().size() + possibleMergeValues;// * 20;
     }
 }

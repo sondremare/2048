@@ -124,7 +124,7 @@ public class Board {
         return null;
     }
 
-    private boolean withinBounds(Position position) {
+    public static boolean withinBounds(Position position) {
         return position.getX() >= 0 && position.getX() < SIZE &&
                 position.getY() >= 0 && position.getY() < SIZE;
     }
