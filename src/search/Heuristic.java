@@ -10,8 +10,8 @@ public class Heuristic {
     public double[][] bottomLeftGradient;
     public double[][] topRightGradient;
     public double[][] bottomRightGradient;
-    private double maxWeight = 1.2;
-    private double weightDecrement = 0.2;
+    private double maxWeight = 7;
+    private double weightDecrement = 1;
 
     public Heuristic() {
         this.topLeftGradient = new double[Board.SIZE][Board.SIZE];
@@ -70,7 +70,7 @@ public class Heuristic {
         for (int i = 0; i < Board.SIZE; i++) {
             for (int j = 0; j < Board.SIZE; j++) {
                 int cellValue = cells[i][j].getValue();
-                double scaledCellValue = cellValue;// == 0 ? 0 : Math.log(cellValue)/Math.log(2);
+                double scaledCellValue = cellValue;// == 0 ? 0 : (Math.log(cellValue)/Math.log(2))*WEIGHT;
                 topLeftSum += scaledCellValue * topLeftGradient[i][j];
                 bottomLeftSum += scaledCellValue * bottomLeftGradient[i][j];
                 topRightSum += scaledCellValue * topRightGradient[i][j];
@@ -92,7 +92,16 @@ public class Heuristic {
             }
         }
         double gradientScore = Math.max(Math.max(topLeftSum, bottomLeftSum), Math.max(topRightSum, bottomRightSum));
-        //return gradientScore;// works kinda decent with alphabeta
-        return gradientScore + Math.log(gradientScore)*board.getEmptyCells().size() + possibleMergeValues;// * 20;
+        double emptyCellsScore = /*Math.log(gradientScore)**/board.getEmptyCells().size();
+        //System.out.println("GradientScore: "+gradientScore);
+        //System.out.println("Empty cells Score: "+emptyCellsScore);
+       // System.out.println("Merge Score: "+possibleMergeValues);
+        //System.out.println("*****************************");
+
+        double gradientWeight = 0.8;
+        double emptyCellWeight = Math.log(gradientScore);
+        double possibleMergeWeight = 2;
+
+        return gradientScore*gradientWeight + emptyCellsScore*emptyCellWeight + possibleMergeValues*possibleMergeWeight;// * 20;
     }
 }

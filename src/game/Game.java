@@ -24,7 +24,6 @@ public class Game {
 
     public boolean playStep() {
         Direction direction = adversarialSearch.decision(board, maxDepth);
-        System.out.println(direction);
         if (direction != null) {
             this.board = applyDirection(board, direction);
             return true;

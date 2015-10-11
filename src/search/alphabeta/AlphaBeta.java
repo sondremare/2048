@@ -28,7 +28,6 @@ public class AlphaBeta implements AdversarialSearch{
             Board child = Game.applyDirection(board, direction);
             if (child == null) continue; //If child is null, no cell was moved or merged with the given direction. So we skip it
             double moveValue = minValue(child, alpha , beta, maxDepth);
-            System.out.println(direction + ": "+moveValue);
             if (moveValue > bestMoveValue || bestMove == null) {
                 bestMoveValue = moveValue;
                 bestMove = direction;
