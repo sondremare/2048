@@ -95,8 +95,8 @@ public class Main extends Application{
         gamePane = new GridPane();
         gamePane.setPrefSize(600, 600);
         Heuristic heuristic = new Heuristic();
-        game = new Game(new AlphaBeta(heuristic));
-        //game = new Game(new Expectimax(heuristic));
+        //game = new Game(new AlphaBeta(heuristic));
+        game = new Game(new Expectimax(heuristic));
 
         mainPane.add(controlPane, 0, 0);
         mainPane.add(gamePane, 1, 0);

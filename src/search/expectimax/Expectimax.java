@@ -42,7 +42,7 @@ public class Expectimax implements AdversarialSearch{
         ArrayList<ChanceNode> children = getExpSuccessors(board);
         double childLength = children.size();
         for (ChanceNode child : children) {
-            double probability = child.getProbability();
+            double probability = child.getProbability() * (1.0/board.getEmptyCells().size());
             value += probability * maxValue(child.getBoard(), depth - 1);
         }
         return value;

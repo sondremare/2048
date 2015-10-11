@@ -56,6 +56,9 @@ public class Heuristic {
     }*/
 
     public double getHeuristicValue(Board board) {
+        if (!board.hasMovesLeft()) {
+            return 0;
+        }
         //System.out.println(board);
         double topLeftSum = 0;
         double bottomLeftSum = 0;
@@ -74,6 +77,6 @@ public class Heuristic {
         }
         double gradientScore = Math.max(Math.max(topLeftSum, bottomLeftSum), Math.max(topRightSum, bottomRightSum));
         //return gradientScore;// works kinda decent with alphabeta
-        return gradientScore + board.getEmptyCells().size() * 20;
+        return gradientScore + Math.log(gradientScore)*board.getEmptyCells().size();// * 20;
     }
 }
