@@ -6,19 +6,49 @@ import game.Position;
 
 public class Heuristic {
     //TODO, figure out if I need to remember last two moves for better gradient heuristic
-    public double[][] topLeftGradient;
-    public double[][] bottomLeftGradient;
-    public double[][] topRightGradient;
-    public double[][] bottomRightGradient;
-    private double maxWeight = 7;
-    private double weightDecrement = 1;
+    public double[][] topLeftHorizontal;
+    public double[][] topLeftVertical;
+    public double[][] topRightHorizontal;
+    public double[][] topRightVertical;
+    public double[][] bottomLeftHorizontal;
+    public double[][] bottomLeftVertical;
+    public double[][] bottomRightHorizontal;
+    public double[][] bottomRightVertical;
 
     public Heuristic() {
-        this.topLeftGradient = new double[Board.SIZE][Board.SIZE];
-        this.bottomLeftGradient = new double[Board.SIZE][Board.SIZE];
-        this.topRightGradient = new double[Board.SIZE][Board.SIZE];
-        this.bottomRightGradient = new double[Board.SIZE][Board.SIZE];
-        int outerCounter = 0;
+        this.topLeftHorizontal = new double[][]{
+            {16, 15, 14, 13},
+            {9, 10, 11, 12},
+            {8, 7, 6, 5},
+            {1, 2, 3, 4}
+        };
+        this.topLeftVertical = new double[][]{
+            {16, 9, 8, 1},
+            {15, 10, 7, 2},
+            {14, 11, 6, 3},
+            {13, 12, 5, 4}
+        };
+        this.topRightHorizontal = new double[Board.SIZE][Board.SIZE];
+        this.topRightVertical = new double[Board.SIZE][Board.SIZE];
+        this.bottomLeftHorizontal = new double[Board.SIZE][Board.SIZE];
+        this.bottomLeftVertical = new double[Board.SIZE][Board.SIZE];
+        this.bottomRightHorizontal = new double[Board.SIZE][Board.SIZE];
+        this.bottomRightVertical = new double[Board.SIZE][Board.SIZE];
+        for (int i = 0; i < Board.SIZE; i++) {
+            for (int j = 0; j < Board.SIZE; j++) {
+                int oppositeI = Math.abs(Board.SIZE - 1) - i;
+                int oppositeJ = Math.abs(Board.SIZE - 1) - j;
+                topRightHorizontal[i][oppositeJ] = topLeftHorizontal[i][j];
+                topRightVertical[i][oppositeJ] = topLeftVertical[i][j];
+
+                bottomLeftHorizontal[oppositeI][j] = topLeftHorizontal[i][j];
+                bottomLeftVertical[oppositeI][j] = topLeftVertical[i][j];
+
+                bottomRightHorizontal[oppositeI][oppositeJ] = topLeftHorizontal[i][j];
+                bottomRightVertical[oppositeI][oppositeJ] = topLeftVertical[i][j];
+            }
+        }
+        /*int outerCounter = 0;
         while (outerCounter < Board.SIZE) {
             int innerCounter = 0;
             double weight = maxWeight;
@@ -32,7 +62,7 @@ public class Heuristic {
             }
             maxWeight -= weightDecrement;
             outerCounter++;
-        }
+        }*/
     }
 
     /*public double getHeuristicValue(Board board) {
@@ -60,21 +90,33 @@ public class Heuristic {
         if (!board.hasMovesLeft()) {
             return 0;
         }
+        if (board.hasWon()) {
+            return Double.MAX_VALUE;
+        }
         //System.out.println(board);
-        double topLeftSum = 0;
-        double bottomLeftSum = 0;
-        double topRightSum = 0;
-        double bottomRightSum = 0;
+        double topLeftHorizontalSum = 0;
+        double topLeftVerticalSum = 0;
+        double topRightHorizontalSum = 0;
+        double topRightVerticalSum = 0;
+        double bottomLeftHorizontalSum = 0;
+        double bottomLeftVerticalSum = 0;
+        double bottomRightHorizontalSum = 0;
+        double bottomRightVerticalSum = 0;
+
         int possibleMergeValues = 0;
         Cell[][] cells = board.getCells();
         for (int i = 0; i < Board.SIZE; i++) {
             for (int j = 0; j < Board.SIZE; j++) {
                 int cellValue = cells[i][j].getValue();
-                double scaledCellValue = cellValue;// == 0 ? 0 : (Math.log(cellValue)/Math.log(2))*WEIGHT;
-                topLeftSum += scaledCellValue * topLeftGradient[i][j];
-                bottomLeftSum += scaledCellValue * bottomLeftGradient[i][j];
-                topRightSum += scaledCellValue * topRightGradient[i][j];
-                bottomRightSum += scaledCellValue * bottomRightGradient[i][j];
+                double scaledCellValue = cellValue; //== 0 ? 0 : (Math.log(cellValue)/Math.log(2));
+                topLeftHorizontalSum += scaledCellValue * topLeftHorizontal[i][j];
+                topLeftVerticalSum += scaledCellValue * topLeftVertical[i][j];
+                topRightHorizontalSum += scaledCellValue * topRightHorizontal[i][j];
+                topRightVerticalSum += scaledCellValue * topRightVertical[i][j];
+                bottomLeftHorizontalSum += scaledCellValue * bottomLeftVertical[i][j];
+                bottomLeftVerticalSum += scaledCellValue * bottomLeftVertical[i][j];
+                bottomRightHorizontalSum += scaledCellValue * bottomRightHorizontal[i][j];
+                bottomRightVerticalSum += scaledCellValue * bottomRightVertical[i][j];
 
                 //Calculating heuristic for possible merges
                 if (cellValue != Board.EMPTY) {
@@ -91,16 +133,16 @@ public class Heuristic {
 
             }
         }
-        double gradientScore = Math.max(Math.max(topLeftSum, bottomLeftSum), Math.max(topRightSum, bottomRightSum));
+        double gradientScore = Math.max(Math.max(Math.max(topLeftHorizontalSum, topLeftVerticalSum), Math.max(topRightHorizontalSum, topRightVerticalSum)), Math.max(Math.max(bottomLeftHorizontalSum, bottomLeftVerticalSum),Math.max(bottomRightHorizontalSum, bottomRightVerticalSum)));
         double emptyCellsScore = /*Math.log(gradientScore)**/board.getEmptyCells().size();
         //System.out.println("GradientScore: "+gradientScore);
         //System.out.println("Empty cells Score: "+emptyCellsScore);
        // System.out.println("Merge Score: "+possibleMergeValues);
         //System.out.println("*****************************");
 
-        double gradientWeight = 0.8;
-        double emptyCellWeight = Math.log(gradientScore);
-        double possibleMergeWeight = 2;
+        double gradientWeight = 1;
+        double emptyCellWeight = 10;
+        double possibleMergeWeight = 4;
 
         return gradientScore*gradientWeight + emptyCellsScore*emptyCellWeight + possibleMergeValues*possibleMergeWeight;// * 20;
     }

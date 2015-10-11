@@ -8,6 +8,7 @@ public class Board {
     public static int EMPTY = 0;
     public Cell[][] cells;
     private ArrayList<Direction> lastTwoMoves;
+    private boolean won = false;
 
     public Board() {
         cells = new Cell[SIZE][SIZE];
@@ -59,6 +60,9 @@ public class Board {
                         if (neighbor.getValue() == cell.getValue() && !neighbor.isRecentlyMerged()) {
                             neighbor.setValue(neighbor.getValue()*2);
                             neighbor.setRecentlyMerged(true);
+                            if (neighbor.getValue() == 2048) {
+                                this.won = true;
+                            }
                             cells[i][j] = new Cell(i, j, 0);
                             movedOrMerged = true;
                         } else {
@@ -123,6 +127,10 @@ public class Board {
             cell.setPosition(currentPosition);
         }
         return null;
+    }
+
+    public boolean hasWon() {
+        return won;
     }
 
     public static boolean withinBounds(Position position) {

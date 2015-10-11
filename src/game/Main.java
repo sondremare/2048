@@ -58,7 +58,7 @@ public class Main extends Application{
         });
 
         Label maxDepthLabel = new Label("Max depth: ");
-        maxDepthInput = new TextField("7");
+        maxDepthInput = new TextField("5");
         maxDepthInput.setMaxWidth(50);
         maxDepthInput.textProperty().addListener(new ChangeListener<String>() {
             @Override
