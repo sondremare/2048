@@ -45,7 +45,7 @@ public class Board {
         chosenCell.setValue(value);
     }
 
-    public boolean move(Direction direction) {
+    public boolean move(Direction direction, boolean addRandomCell) {
         boolean movedOrMerged = false;
         int[][] loopOrders = Game.getLoopOrder(direction);
 
@@ -86,8 +86,9 @@ public class Board {
                 lastTwoMoves.set(0, lastTwoMoves.get(1));
                 lastTwoMoves.set(1, direction);
             }
-
-            addRandomCell();
+            if (addRandomCell) {
+                addRandomCell();
+            }
         }
         return movedOrMerged;
     }

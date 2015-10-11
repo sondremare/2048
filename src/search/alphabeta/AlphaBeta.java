@@ -25,7 +25,7 @@ public class AlphaBeta implements AdversarialSearch{
         beta = Double.MAX_VALUE;
         double bestMoveValue = -Double.MAX_VALUE;
         for (Direction direction : Direction.values()) {
-            Board child = Game.applyDirection(board, direction);
+            Board child = Game.applyDirection(board, direction, false);
             if (child == null) continue; //If child is null, no cell was moved or merged with the given direction. So we skip it
             double moveValue = minValue(child, alpha , beta, maxDepth);
             if (moveValue > bestMoveValue || bestMove == null) {
@@ -92,7 +92,7 @@ public class AlphaBeta implements AdversarialSearch{
     private ArrayList<Board> getMaxSuccessors(Board board) {
         ArrayList<Board> children = new ArrayList<>();
         for (Direction direction : Direction.values()) {
-            Board child = Game.applyDirection(board, direction);
+            Board child = Game.applyDirection(board, direction, false);
             if (child != null) { //We only add children where there direction caused a move or a merge.
                 children.add(child);
             }

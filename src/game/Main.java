@@ -155,19 +155,19 @@ public class Main extends Application{
                 switch (event.getCode()) {
                     case LEFT:
                         System.out.println("LEFT");
-                        game.getBoard().move(Direction.LEFT);
+                        game.getBoard().move(Direction.LEFT, true);
                         break;
                     case UP:
                         System.out.println("UP");
-                        game.getBoard().move(Direction.UP);
+                        game.getBoard().move(Direction.UP, true);
                         break;
                     case RIGHT:
                         System.out.println("RIGHT");
-                        game.getBoard().move(Direction.RIGHT);
+                        game.getBoard().move(Direction.RIGHT, true);
                         break;
                     case DOWN:
                         System.out.println("DOWN");
-                        game.getBoard().move(Direction.DOWN);
+                        game.getBoard().move(Direction.DOWN, true);
                         break;
                     default:
                 }

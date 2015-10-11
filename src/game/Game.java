@@ -25,16 +25,18 @@ public class Game {
     public boolean playStep() {
         Direction direction = adversarialSearch.decision(board, maxDepth);
         if (direction != null) {
-            this.board = applyDirection(board, direction);
+            System.out.println("Moving: "+direction);
+            this.board = applyDirection(board, direction, true);
             return true;
         } else {
+            System.out.println("Illegal move");
             return false;
         }
     }
 
-    public static Board applyDirection(Board board, Direction direction) {
+    public static Board applyDirection(Board board, Direction direction, boolean addRandomCell) {
         Board child = new Board(board);
-        boolean moved = child.move(direction);
+        boolean moved = child.move(direction, addRandomCell);
         if (moved) {
             return child;
         } else {
