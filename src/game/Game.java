@@ -25,11 +25,9 @@ public class Game {
     public boolean playStep() {
         Direction direction = adversarialSearch.decision(board, maxDepth);
         if (direction != null) {
-            System.out.println("Moving: "+direction);
             this.board = applyDirection(board, direction, true);
             return true;
         } else {
-            System.out.println("Illegal move");
             return false;
         }
     }
