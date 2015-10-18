@@ -43,4 +43,8 @@ public class Position {
         }
         return null;
     }
+
+    public String toString() {
+        return x+","+y;
+    }
 }

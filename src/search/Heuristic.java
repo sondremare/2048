@@ -62,13 +62,13 @@ public class Heuristic {
             }
         }
 
-        //topLeftHorizontalTraversal = createTraversal(true, false, false);
-        //topLeftVerticalTraversal = createTraversal(false, false, false);
-        //topRightHorizontalTraversal = createTraversal(true, false, true);
-        //topRightVerticalTraversal = createTraversal(false, false, true); //TODO is BottomLeftVertical
-        //bottomLeftHorizontalTraversal = createTraversal(true, true, false);
-        //bottomLeftVerticalTraversal = createTraversal(false, true, false); //TODO is TopRightVertical
-        //bottomRightHorizontalTraversal = createTraversal(true, true, true);
+        topLeftHorizontalTraversal = createTraversal(true, false, false);
+        topLeftVerticalTraversal = createTraversal(false, false, false);
+        topRightHorizontalTraversal = createTraversal(true, false, true);
+        topRightVerticalTraversal = createTraversal(false, true, false);
+        bottomLeftHorizontalTraversal = createTraversal(true, true, false);
+        bottomLeftVerticalTraversal = createTraversal(false, false, true);
+        bottomRightHorizontalTraversal = createTraversal(true, true, true);
         bottomRightVerticalTraversal = createTraversal(false, true, true);
 
         /*int outerCounter = 0;
@@ -193,9 +193,35 @@ public class Heuristic {
 
             }
         }
+        //System.out.println(board);
         double gradientScore = Math.max(Math.max(Math.max(topLeftHorizontalSum, topLeftVerticalSum), Math.max(topRightHorizontalSum, topRightVerticalSum)), Math.max(Math.max(bottomLeftHorizontalSum, bottomLeftVerticalSum),Math.max(bottomRightHorizontalSum, bottomRightVerticalSum)));
-        if (gradientScore == topLeftHorizontalSum) {
 
+        double penalty = 0;
+        ArrayList<Position> traversal;
+        if (gradientScore == topLeftHorizontalSum) {
+            traversal = topLeftHorizontalTraversal;
+        } else if (gradientScore == topLeftVerticalSum) {
+            traversal = topLeftVerticalTraversal;
+        } else if (gradientScore == topRightHorizontalSum) {
+            traversal = topRightHorizontalTraversal;
+        } else if (gradientScore == topRightVerticalSum) {
+            traversal = topRightVerticalTraversal;
+        } else if (gradientScore == bottomLeftHorizontalSum) {
+            traversal = bottomLeftHorizontalTraversal;
+        } else if (gradientScore == bottomLeftVerticalSum) {
+            traversal = bottomLeftVerticalTraversal;
+        } else if (gradientScore == bottomRightHorizontalSum) {
+            traversal = bottomRightHorizontalTraversal;
+        } else {
+            traversal = bottomRightVerticalTraversal;
+        }
+        int previousValue = Integer.MAX_VALUE;
+        for (Position pos : traversal) {
+            int cellValue = cells[pos.getX()][pos.getY()].getValue();
+            if (cellValue > previousValue) {
+                penalty += cellValue - previousValue;
+            }
+            previousValue = cellValue;
         }
         double emptyCellsScore = /*Math.log(gradientScore)**/board.getEmptyCells().size();
 
@@ -204,7 +230,8 @@ public class Heuristic {
         double emptyCellWeight = 0.5 * (1.0 / 16.0) * gradientScore;
         double possibleMergeWeight = 4;
         double clusterWeight = 0;
-       //System.out.println(board);
+        double penaltyWeight = Math.log(gradientScore) / Math.log(2);
+
        // System.out.println("GradientScore: "+ gradientScore + " ("+ (gradientScore * gradientWeight) + ")");
         //System.out.println("ClusterPenalty: "+ clusterPenalty + " ("+ (clusterPenalty * clusterWeight) + ")");
        // System.out.println("Empty cells: "+ emptyCellsScore + " ("+ (emptyCellsScore * emptyCellWeight) + ")");
@@ -213,7 +240,8 @@ public class Heuristic {
         //System.out.println("clusterPenalty: "+clusterPenalty);
         //System.out.println("GradientScore: "+gradientScore);
         //System.out.println("EmptyCellScore: "+emptyCellsScore*emptyCellWeight + " ("+emptyCellsScore+")");
-        double heuristicValue = gradientScore + (emptyCellsScore*emptyCellWeight) - clusterPenalty;
+        //System.out.println("DescendingPenalty: "+penalty);
+        double heuristicValue = gradientScore + (emptyCellsScore*emptyCellWeight) - (penalty * penaltyWeight);
         //System.out.println("Total Score: "+heuristicValue);
         //System.out.println("********************************");
         return heuristicValue;

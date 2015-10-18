@@ -21,6 +21,10 @@ public class Board {
         addRandomCell();
     }
 
+    public Board(Cell[][] cells) {
+        this.cells = cells;
+    }
+
     public Board(Board previousState) {
         cells = new Cell[SIZE][SIZE];
         for (int i = 0; i < SIZE; i++) {

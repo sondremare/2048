@@ -29,7 +29,7 @@ public class Main extends Application{
     private static Game game;
     private static AdversarialSearch search;
     private static boolean gameOver = false;
-    private static double PLAY_SPEED = 50;
+    private static double PLAY_SPEED = 500;
     private boolean isPlaying = false;
     private static Timeline loop;
     private static RadioButton alphaBetaRadioButton;
@@ -234,5 +234,50 @@ public class Main extends Application{
 
     public static void main(String[] args) {
         launch(args);
+        Heuristic heuristic = new Heuristic();
+        Cell[][] cells = new Cell[][]{
+                {new Cell(0,0,0), new Cell(1, 0, 0), new Cell(2, 0, 0), new Cell(3, 0, 128)},
+                {new Cell(0,1,0), new Cell(1, 1, 0), new Cell(2, 1, 4), new Cell(3, 1, 256)},
+                {new Cell(0,2,0), new Cell(1, 2, 0), new Cell(2, 2, 64), new Cell(3, 2, 256)},
+                {new Cell(0,3,0), new Cell(1, 3, 0), new Cell(2, 3,128), new Cell(3, 3, 512)}
+        };
+        Board board = new Board(cells);
+        heuristic.getHeuristicValue(board);
+
+        Cell[][] cells2 = new Cell[][]{
+                {new Cell(0,0,0), new Cell(1, 0, 0), new Cell(2, 0, 0), new Cell(3, 0, 0)},
+                {new Cell(0,1,0), new Cell(1, 1, 0), new Cell(2, 1, 4), new Cell(3, 1, 128)},
+                {new Cell(0,2,0), new Cell(1, 2, 0), new Cell(2, 2, 64), new Cell(3, 2, 512)},
+                {new Cell(0,3,0), new Cell(1, 3, 0), new Cell(2, 3,128), new Cell(3, 3, 512)}
+        };
+        Board board2 = new Board(cells2);
+        heuristic.getHeuristicValue(board2);
+
+        Cell[][] cells3 = new Cell[][]{
+                {new Cell(0,0,8), new Cell(1, 0, 4), new Cell(2, 0, 2), new Cell(3, 0, 0)},
+                {new Cell(0,1,0), new Cell(1, 1, 8), new Cell(2, 1, 4), new Cell(3, 1, 128)},
+                {new Cell(0,2,2), new Cell(1, 2, 2), new Cell(2, 2, 64), new Cell(3, 2, 512)},
+                {new Cell(0,3,4), new Cell(1, 3, 0), new Cell(2, 3,128), new Cell(3, 3, 512)}
+        };
+        Board board3 = new Board(cells3);
+        heuristic.getHeuristicValue(board3);
+
+        Cell[][] cells4 = new Cell[][]{
+                {new Cell(0,0,0), new Cell(1, 0, 0), new Cell(2, 0, 32), new Cell(3, 0, 64)},
+                {new Cell(0,1,0), new Cell(1, 1, 0), new Cell(2, 1, 16), new Cell(3, 1, 128)},
+                {new Cell(0,2,0), new Cell(1, 2, 0), new Cell(2, 2, 8), new Cell(3, 2, 512)},
+                {new Cell(0,3,0), new Cell(1, 3, 2), new Cell(2, 3, 4), new Cell(3, 3, 1024)}
+        };
+        Board board4 = new Board(cells4);
+        heuristic.getHeuristicValue(board4);
+
+        Cell[][] cells5 = new Cell[][]{
+                {new Cell(0,0,0), new Cell(1, 0, 0), new Cell(2, 0, 64), new Cell(3, 0, 128)},
+                {new Cell(0,1,0), new Cell(1, 1, 0), new Cell(2, 1, 32), new Cell(3, 1, 256)},
+                {new Cell(0,2,0), new Cell(1, 2, 2), new Cell(2, 2, 18), new Cell(3, 2, 1024)},
+                {new Cell(0,3,0), new Cell(1, 3, 4), new Cell(2, 3, 8), new Cell(3, 3, 256)}
+        };
+        Board board5 = new Board(cells5);
+        heuristic.getHeuristicValue(board5);
     }
 }
