@@ -8,7 +8,6 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 
 public class Heuristic {
-    //TODO, figure out if I need to remember last two moves for better gradient heuristic
     public double[][] topLeftHorizontal;
     public double[][] topLeftVertical;
     public double[][] topRightHorizontal;
@@ -70,44 +69,7 @@ public class Heuristic {
         bottomLeftVerticalTraversal = createTraversal(false, false, true);
         bottomRightHorizontalTraversal = createTraversal(true, true, true);
         bottomRightVerticalTraversal = createTraversal(false, true, true);
-
-        /*int outerCounter = 0;
-        while (outerCounter < Board.SIZE) {
-            int innerCounter = 0;
-            double weight = maxWeight;
-            while (innerCounter < Board.SIZE) {
-                topLeftGradient[outerCounter][innerCounter] = weight;
-                topRightGradient[Math.abs((Board.SIZE - 1) - outerCounter)][innerCounter] = weight;
-                bottomLeftGradient[outerCounter][Math.abs((Board.SIZE - 1) - innerCounter)] = weight;
-                bottomRightGradient[Math.abs((Board.SIZE - 1) - outerCounter)][Math.abs((Board.SIZE - 1) - innerCounter)] = weight;
-                weight -= weightDecrement;
-                innerCounter++;
-            }
-            maxWeight -= weightDecrement;
-            outerCounter++;
-        }*/
     }
-
-    /*public double getHeuristicValue(Board board) {
-        //System.out.println(board);
-        double topLeftSum = 0;
-        double bottomLeftSum = 0;
-        double topRightSum = 0;
-        double bottomRightSum = 0;
-        Cell[][] cells = board.getCells();
-        for (int i = 0; i < Board.SIZE; i++) {
-            for (int j = 0; j < Board.SIZE; j++) {
-                int cellValue = cells[i][j].getValue();
-                double scaledCellValue = cellValue == 0 ? 0 : Math.log(cells[i][j].getValue())/Math.log(2);
-                topLeftSum += cellValue * topLeftGradient[i][j];
-                bottomLeftSum += cellValue * bottomLeftGradient[i][j];
-                topRightSum += cellValue * topRightGradient[i][j];
-                bottomRightSum += cellValue * bottomRightGradient[i][j];
-            }
-        }
-        double gradientScore = Math.max(Math.max(topLeftSum, bottomLeftSum), Math.max(topRightSum, bottomRightSum));
-        return gradientScore + board.getEmptyCells().size() * 10;
-    }*/
 
     public ArrayList<Position> createTraversal(boolean isHorizontal, boolean areRowsReversed, boolean areColumnsReversed) {
         int columnRemainder = areColumnsReversed == areRowsReversed ? 0 : 1;
@@ -118,9 +80,7 @@ public class Heuristic {
                 int col;
                 if (row % 2 == columnRemainder) {
                     col = j;
-                    //traversal.add(new Pair(row,j));
                 } else {
-                    //traversal.add(new Pair(row, Math.abs((Board.SIZE - 1)) - j));
                     col = Math.abs((Board.SIZE - 1 ) - j);
                 }
                 if (isHorizontal) {
@@ -157,7 +117,7 @@ public class Heuristic {
         for (int i = 0; i < Board.SIZE; i++) {
             for (int j = 0; j < Board.SIZE; j++) {
                 int cellValue = cells[i][j].getValue();
-                double scaledCellValue = cellValue;// == 0 ? 0 : (Math.log(cellValue)/Math.log(2));
+                double scaledCellValue = cellValue;
                 topLeftHorizontalSum += scaledCellValue * topLeftHorizontal[i][j];
                 topLeftVerticalSum += scaledCellValue * topLeftVertical[i][j];
                 topRightHorizontalSum += scaledCellValue * topRightHorizontal[i][j];
@@ -167,7 +127,6 @@ public class Heuristic {
                 bottomRightHorizontalSum += scaledCellValue * bottomRightHorizontal[i][j];
                 bottomRightVerticalSum += scaledCellValue * bottomRightVertical[i][j];
 
-                //Calculating heuristic for possible merges
                 if (cellValue != Board.EMPTY) {
                     Position horizontalNeighborPosition = new Position(i + 1, j);
                     Position verticalNeighborPosition = new Position(i, j + 1);
@@ -193,7 +152,7 @@ public class Heuristic {
 
             }
         }
-        //System.out.println(board);
+
         double gradientScore = Math.max(Math.max(Math.max(topLeftHorizontalSum, topLeftVerticalSum), Math.max(topRightHorizontalSum, topRightVerticalSum)), Math.max(Math.max(bottomLeftHorizontalSum, bottomLeftVerticalSum),Math.max(bottomRightHorizontalSum, bottomRightVerticalSum)));
 
         double penalty = 0;
@@ -223,7 +182,7 @@ public class Heuristic {
             }
             previousValue = cellValue;
         }
-        double emptyCellsScore = /*Math.log(gradientScore)**/board.getEmptyCells().size();
+        double emptyCellsScore = board.getEmptyCells().size();
 
 
         double gradientWeight = 1;
@@ -232,18 +191,7 @@ public class Heuristic {
         double clusterWeight = 0;
         double penaltyWeight = Math.log(gradientScore) / Math.log(2);
 
-       // System.out.println("GradientScore: "+ gradientScore + " ("+ (gradientScore * gradientWeight) + ")");
-        //System.out.println("ClusterPenalty: "+ clusterPenalty + " ("+ (clusterPenalty * clusterWeight) + ")");
-       // System.out.println("Empty cells: "+ emptyCellsScore + " ("+ (emptyCellsScore * emptyCellWeight) + ")");
-        //System.out.println("Possible merges: "+ possibleMergeValues + " ("+ (possibleMergeValues * possibleMergeWeight) + ")");
-        //double heuristicValue = gradientScore*gradientWeight + emptyCellsScore*emptyCellWeight + possibleMergeValues*possibleMergeWeight - clusterPenalty*clusterWeight;
-        //System.out.println("clusterPenalty: "+clusterPenalty);
-        //System.out.println("GradientScore: "+gradientScore);
-        //System.out.println("EmptyCellScore: "+emptyCellsScore*emptyCellWeight + " ("+emptyCellsScore+")");
-        //System.out.println("DescendingPenalty: "+penalty);
         double heuristicValue = gradientScore + (emptyCellsScore*emptyCellWeight) - (penalty * penaltyWeight);
-        //System.out.println("Total Score: "+heuristicValue);
-        //System.out.println("********************************");
         return heuristicValue;
     }
 }
